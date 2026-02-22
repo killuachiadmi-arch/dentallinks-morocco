@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Map – DentalLink Morocco</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+:root{--primary:#2563eb;--primary-dark:#1e40af;--secondary:#0891b2;--dark:#1e293b;--accent:#06b6d4;--light-bg:#f1f5f9;--white:#fff;--text-dark:#334155}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;font-family:'Outfit',sans-serif;background:var(--white);color:var(--text-dark);overflow:hidden}
+
+/* nav */
+nav{position:fixed;top:0;width:100%;z-index:1000;background:rgba(255,255,255,.97);backdrop-filter:blur(10px);padding:1rem 5%;border-bottom:1px solid rgba(37,99,235,.15);box-shadow:0 2px 12px rgba(0,0,0,.06)}
+.nav-inner{max-width:1400px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+.logo{font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:900;color:var(--primary);text-decoration:none}
+.nav-right{display:flex;align-items:center;gap:2rem}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links a{color:var(--text-dark);text-decoration:none;font-weight:500;font-size:.95rem;transition:color .3s}
+.nav-links a:hover,.nav-links a.active{color:var(--primary)}
+.language-switcher{display:flex;background:var(--light-bg);padding:.35rem;border-radius:50px}
+.lang-btn{padding:.4rem .9rem;border:none;background:transparent;color:var(--text-dark);font-weight:600;font-size:.85rem;cursor:pointer;border-radius:50px;font-family:'Outfit',sans-serif;transition:all .3s}
+.lang-btn.active{background:var(--primary);color:#fff}
+.lang-btn:hover:not(.active){background:rgba(37,99,235,.1)}
+
+/* layout */
+.page-wrap{display:flex;height:calc(100vh - 62px);margin-top:62px}
+
+/* ── left panel ── */
+.left-panel{width:340px;min-width:340px;background:var(--white);border-right:1px solid #e2e8f0;display:flex;flex-direction:column;overflow:hidden;z-index:10}
+.panel-header{padding:1.4rem 1.5rem 1rem;background:linear-gradient(135deg,#eff6ff,#f0f9ff);border-bottom:1px solid #e2e8f0}
+.panel-header h2{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--dark);margin-bottom:.75rem}
+.panel-search{position:relative}
+.panel-search input{width:100%;padding:.7rem 1rem .7rem 2.4rem;border:2px solid #e2e8f0;border-radius:50px;font-family:'Outfit',sans-serif;font-size:.9rem;transition:border-color .3s,box-shadow .3s}
+.panel-search input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(37,99,235,.12)}
+.panel-search .s-icon{position:absolute;left:.85rem;top:50%;transform:translateY(-50%);font-size:1rem;opacity:.5}
+
+/* lab list */
+.lab-list{flex:1;overflow-y:auto;padding:.7rem}
+.lab-list::-webkit-scrollbar{width:6px}
+.lab-list::-webkit-scrollbar-track{background:transparent}
+.lab-list::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px}
+
+.list-item{display:flex;align-items:center;gap:.75rem;padding:.7rem .85rem;border-radius:12px;cursor:pointer;transition:background .25s,box-shadow .25s;border:2px solid transparent;margin-bottom:.25rem}
+.list-item:hover{background:#eff6ff}
+.list-item.active{background:#dbeafe;border-color:var(--primary);box-shadow:0 2px 10px rgba(37,99,235,.18)}
+.list-dot{width:14px;height:14px;background:var(--primary);border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 2px var(--primary);flex-shrink:0}
+.list-item .reg-badge{display:inline-flex;align-items:center;gap:.3rem;padding:.15rem .55rem;background:rgba(34,197,94,.1);color:#16a34a;border-radius:20px;font-size:.68rem;font-weight:600}
+.list-item .reg-badge::before{content:'';width:6px;height:6px;background:#22c55e;border-radius:50%}
+.list-text h4{font-size:.9rem;color:var(--dark);font-weight:600}
+.list-text span{font-size:.78rem;color:#64748b}
+
+/* empty state */
+.empty-state{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1.2rem;text-align:center;gap:.9rem}
+.empty-state .e-icon{font-size:3.2rem;opacity:.6}
+.empty-state h3{font-size:1rem;color:var(--dark);font-weight:700}
+.empty-state p{font-size:.84rem;color:#64748b;line-height:1.55;max-width:250px}
+.empty-state a{display:inline-block;padding:.5rem 1.2rem;background:var(--primary);color:#fff;border-radius:50px;text-decoration:none;font-weight:600;font-size:.85rem;transition:background .3s,transform .2s}
+.empty-state a:hover{background:var(--primary-dark);transform:translateY(-2px)}
+
+/* detail panel */
+.detail-panel{display:none;flex-direction:column;flex:1;overflow-y:auto}
+.detail-panel.active{display:flex}
+.detail-header{background:linear-gradient(135deg,var(--primary),var(--secondary));padding:1.3rem 1.2rem;color:#fff;position:relative}
+.detail-header h3{font-family:'Playfair Display',serif;font-size:1.3rem;margin-bottom:.2rem}
+.detail-header .city-badge{display:inline-block;background:rgba(255,255,255,.2);padding:.2rem .7rem;border-radius:20px;font-size:.78rem;font-weight:600}
+.back-btn{position:absolute;top:.8rem;right:.8rem;background:rgba(255,255,255,.2);border:none;color:#fff;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:background .3s}
+.back-btn:hover{background:rgba(255,255,255,.35)}
+.detail-imgs{display:grid;grid-template-columns:repeat(4,1fr);gap:.35rem;padding:.6rem;background:var(--light-bg)}
+.d-img{aspect-ratio:1;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;cursor:pointer;transition:transform .25s,box-shadow .25s;overflow:hidden}
+.d-img:hover{transform:scale(1.06);box-shadow:0 4px 12px rgba(37,99,235,.25)}
+.d-img img{width:100%;height:100%;object-fit:cover}
+.d-img.placeholder{background:linear-gradient(135deg,#dbeafe,#e0f2fe)}
+.detail-rows{padding:.9rem 1.1rem}
+.d-row{display:flex;align-items:flex-start;gap:.6rem;margin-bottom:.6rem;font-size:.86rem}
+.d-row .di{font-size:.95rem;min-width:20px;text-align:center}
+.d-row .dt a{color:var(--primary);text-decoration:none}
+.d-row .dt a:hover{text-decoration:underline}
+.detail-svcs{padding:0 1.1rem 1rem}
+.detail-svcs h5{font-size:.78rem;text-transform:uppercase;letter-spacing:.5px;color:#64748b;margin-bottom:.45rem}
+.detail-svcs .tags{display:flex;flex-wrap:wrap;gap:.35rem}
+.detail-svcs .tag{padding:.28rem .7rem;background:rgba(37,99,235,.08);color:var(--primary);border-radius:20px;font-size:.78rem;font-weight:500}
+
+/* map */
+.map-wrap{flex:1;position:relative}
+#map{width:100%;height:100%}
+
+/* leaflet tweaks */
+.leaflet-control-zoom{border-radius:12px!important;border:none!important;box-shadow:0 4px 16px rgba(0,0,0,.13)!important;overflow:hidden}
+.leaflet-control-zoom a{color:var(--primary)!important;font-size:1.15rem!important;height:36px!important;line-height:36px!important}
+.leaflet-control-zoom a:hover{background:#eff6ff!important}
+.leaflet-control-attribution{font-size:.68rem!important;background:rgba(255,255,255,.88)!important;border-radius:8px 0 0 0!important}
+
+/* custom pin icon */
+.custom-pin{
+    width:28px;height:28px;
+    background:var(--primary);border:3px solid #fff;
+    border-radius:50% 50% 50% 4px;
+    transform:rotate(-45deg);
+    box-shadow:0 3px 10px rgba(37,99,235,.45);
+    cursor:pointer;
+    transition:transform .2s,box-shadow .2s;
+}
+.custom-pin:hover{
+    box-shadow:0 4px 16px rgba(37,99,235,.6);
+    transform:rotate(-45deg) scale(1.15);
+}
+.custom-pin.active-pin{
+    background:var(--primary-dark);
+    box-shadow:0 0 0 4px rgba(37,99,235,.3),0 3px 10px rgba(37,99,235,.45);
+}
+/* registered pins are slightly different shade */
+.custom-pin.registered{background:#16a34a;box-shadow:0 3px 10px rgba(22,163,74,.45)}
+.custom-pin.registered:hover{box-shadow:0 4px 16px rgba(22,163,74,.6)}
+.custom-pin.registered.active-pin{background:#15803d;box-shadow:0 0 0 4px rgba(22,163,74,.3),0 3px 10px rgba(22,163,74,.45)}
+
+/* image modal */
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:3000;align-items:center;justify-content:center;cursor:pointer}
+.modal-ov.active{display:flex}
+.modal-box{background:#fff;border-radius:16px;padding:1.5rem;max-width:480px;width:90%;text-align:center;cursor:auto;position:relative}
+.modal-box .mc{position:absolute;top:.6rem;right:.9rem;font-size:1.5rem;cursor:pointer;color:var(--text-dark);background:none;border:none}
+.modal-box img{max-width:100%;max-height:70vh;border-radius:10px}
+.modal-box .me{font-size:9rem;line-height:1}
+
+/* responsive */
+@media(max-width:900px){.page-wrap{flex-direction:column}.left-panel{width:100%;min-width:0;height:42vh}.map-wrap{height:58vh}html,body{overflow:auto}}
+</style>
+</head>
+<body>
+
+<!-- nav -->
+<nav><div class="nav-inner">
+  <a href="index.html" class="logo">DentalLink</a>
+  <div class="nav-right">
+    <ul class="nav-links">
+      <li><a href="index.html"        data-en="Home"         data-fr="Accueil">Home</a></li>
+      <li><a href="lab-profiles.html"  data-en="Lab Profiles" data-fr="Profils des Labos">Lab Profiles</a></li>
+      <li><a href="map.html"           data-en="Map"          data-fr="Carte" class="active">Map</a></li>
+      <li><a href="register.html"      data-en="Register"     data-fr="S'inscrire">Register</a></li>
+    </ul>
+    <div class="language-switcher">
+      <button class="lang-btn active" data-lang="en">EN</button>
+      <button class="lang-btn"        data-lang="fr">FR</button>
+    </div>
+  </div>
+</div></nav>
+
+<!-- layout -->
+<div class="page-wrap">
+
+  <!-- left panel -->
+  <div class="left-panel">
+    <div class="panel-header">
+      <h2 data-en="Dental Labs in Morocco" data-fr="Laboratoires au Maroc">Dental Labs in Morocco</h2>
+      <div class="panel-search">
+        <span class="s-icon">🔍</span>
+        <input type="text" id="panelSearch" data-en="Search labs…" data-fr="Rechercher…" placeholder="Search labs…">
+      </div>
+    </div>
+    <!-- list / empty / detail injected here -->
+    <div id="panelBody" style="flex:1;display:flex;flex-direction:column;overflow:hidden"></div>
+  </div>
+
+  <!-- map -->
+  <div class="map-wrap">
+    <div id="map"></div>
+  </div>
+</div>
+
+<!-- img modal -->
+<div class="modal-ov" id="modalOv" onclick="closeImgModal()">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <button class="mc" onclick="closeImgModal()">×</button>
+    <div id="modalInner"></div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════
+   CITY → lat/lng  (centre points for each city)
+═══════════════════════════════════════════════ */
+const CITY_COORDS = {
+  Casablanca: [33.59, -7.62],
+  Rabat:      [33.99, -6.86],
+  Marrakech:  [31.63, -8.00],
+  Fes:        [33.93, -5.35],
+  Tangier:    [35.78, -5.80],
+  Agadir:     [30.42, -9.43],
+  Meknes:     [33.90, -5.55],
+  Oujda:      [34.26, -1.75],
+  Kenitra:    [34.26, -6.75],
+  Tetouan:    [35.57, -5.37]
+};
+
+/* ─── demo labs ─── */
+const DEMO_LABS = [
+  { name:"Dental Excellence Lab", city:"Casablanca", manager:"Hassan Alami", phone:"+212 522 123 456", email:"contact@dentalexcellence.ma", address:"Boulevard Zerktouni, Casablanca 20250", instagram:"@dentalexcellence", website:"dentalexcellence.ma", images:[null,null,null,null], services:[{en:"Crowns",fr:"Couronnes"},{en:"Veneers",fr:"Facettes"},{en:"Implants",fr:"Implants"},{en:"Orthodontics",fr:"Orthodontie"}], demo:true },
+  { name:"Pro Dental Lab", city:"Rabat", manager:"Fatima Benali", phone:"+212 537 234 567", email:"info@prodentallab.ma", address:"Avenue Mohammed V, Rabat 10000", instagram:"@prodentallab", website:"prodentallab.ma", images:[null,null,null,null], services:[{en:"Bridges",fr:"Bridges"},{en:"Dentures",fr:"Prothèses"},{en:"Prosthodontics",fr:"Prosthodontie"},{en:"Ceramic Work",fr:"Céramique"}], demo:true },
+  { name:"Smile Design Lab", city:"Marrakech", manager:"Youssef Idrissi", phone:"+212 524 345 678", email:"hello@smiledesignlab.ma", address:"Rue de la Liberté, Gueliz, Marrakech 40000", instagram:"@smiledesignlab", website:"smiledesignlab.ma", images:[null,null,null,null], services:[{en:"Cosmetic Dentistry",fr:"Dentisterie Esthétique"},{en:"Whitening",fr:"Blanchiment"},{en:"Digital Scanning",fr:"Scanner Numérique"},{en:"Veneers",fr:"Facettes"}], demo:true },
+  { name:"Precision Dental Lab", city:"Fes", manager:"Ahmed Bennani", phone:"+212 535 456 789", email:"contact@precisiondentallab.ma", address:"Boulevard Hassan II, Fes 30000", instagram:"@precisiondentallab", website:"precisiondentallab.ma", images:[null,null,null,null], services:[{en:"CAD/CAM",fr:"CAD/CAM"},{en:"3D Printing",fr:"Impression 3D"},{en:"Zirconia Crowns",fr:"Couronnes en Zircone"},{en:"Implants",fr:"Implants"}], demo:true },
+  { name:"Atlantic Dental Lab", city:"Tangier", manager:"Sara El Amrani", phone:"+212 539 567 890", email:"info@atlanticdentallab.ma", address:"Avenue des FAR, Tangier 90000", instagram:"@atlanticdentallab", website:"atlanticdentallab.ma", images:[null,null,null,null], services:[{en:"Removable Prosthodontics",fr:"Prothèses Amovibles"},{en:"Night Guards",fr:"Gouttières Nocturnes"},{en:"Sports Guards",fr:"Protège-Dents"},{en:"Dentures",fr:"Prothèses"}], demo:true },
+  { name:"Modern Dental Lab", city:"Agadir", manager:"Karim Tazi", phone:"+212 528 678 901", email:"contact@moderndentallab.ma", address:"Boulevard Mohammed V, Agadir 80000", instagram:"@moderndentallab", website:"moderndentallab.ma", images:[null,null,null,null], services:[{en:"Orthodontic Appliances",fr:"Appareils Orthodontiques"},{en:"Clear Aligners",fr:"Gouttières Invisibles"},{en:"Retainers",fr:"Contentions"},{en:"Braces",fr:"Appareils"}], demo:true }
+];
+
+const PLACEHOLDER_EMOJIS = ['🦷','🏥','⚕️','✨'];
+let lang = 'en';
+let allLabs = [];
+let markers = [];          // leaflet marker refs
+let selectedIdx = null;
+
+/* ─── get labs ─── */
+function getAllLabs(){
+  const user = JSON.parse(localStorage.getItem('dentallink_labs')||'[]');
+  return [...DEMO_LABS, ...user];
+}
+
+/* ═══ LEAFLET MAP ═══ */
+const map = L.map('map',{center:[31.5,-8.5],zoom:6,zoomControl:true});
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+  attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',maxZoom:19
+}).addTo(map);
+
+// Morocco overlay
+L.geoJSON({type:"Feature",geometry:{type:"Polygon",coordinates:[[
+  [-1.76,34.30],[-2.12,34.55],[-2.56,34.82],[-3.02,35.02],[-3.52,35.17],
+  [-4.02,35.32],[-4.57,35.47],[-5.04,35.59],[-5.47,35.73],[-5.88,35.69],
+  [-6.23,35.76],[-6.01,35.56],[-5.81,35.43],[-5.59,35.26],[-5.43,35.06],
+  [-5.31,34.81],[-5.43,34.56],[-5.59,34.29],[-5.76,34.01],[-5.93,33.73],
+  [-6.11,33.46],[-6.31,33.06],[-6.51,32.51],[-6.71,31.61],[-6.51,31.79],
+  [-6.42,32.01],[-6.46,32.26],[-6.59,32.53],[-6.79,32.79],[-7.06,33.03],
+  [-7.36,33.23],[-7.73,33.39],[-8.13,33.49],[-8.56,33.53],[-9.01,33.51],
+  [-9.46,33.43],[-9.91,33.31],[-10.31,33.13],[-10.59,32.86],[-10.73,32.56],
+  [-10.76,32.23],[-10.66,31.89],[-10.46,31.56],[-10.16,31.26],[-9.79,31.01],
+  [-9.36,30.79],[-8.89,30.59],[-8.39,30.43],[-7.86,30.31],[-7.31,30.23],
+  [-6.76,30.21],[-6.21,30.26],[-5.66,30.36],[-5.11,30.51],[-4.56,30.71],
+  [-4.01,30.96],[-3.46,31.26],[-2.91,31.56],[-2.41,31.91],[-2.01,32.36],
+  [-1.71,32.81],[-1.51,33.31],[-1.56,33.81],[-1.76,34.30]
+]]}},{style:{fillColor:'#2563eb',fillOpacity:.08,color:'#2563eb',weight:2.5,opacity:.55,dashArray:'8,5'}}
+).addTo(map);
+
+/* ─── custom divIcon factory ─── */
+function makePinIcon(isRegistered){
+  return L.divIcon({
+    className:'',
+    html:`<div class="custom-pin ${isRegistered?'registered':''}"></div>`,
+    iconSize:[28,28], iconAnchor:[14,28], popupAnchor:[0,-28]
+  });
+}
+
+/* ─── place pins ─── */
+function placePins(){
+  // clear old
+  markers.forEach(m=> map.removeLayer(m));
+  markers = [];
+
+  allLabs.forEach((lab,i)=>{
+    const coords = CITY_COORDS[lab.city];
+    if(!coords) return;
+    // slight random offset so pins in the same city don't stack perfectly
+    const offset = [coords[0]+(Math.random()-.5)*0.06, coords[1]+(Math.random()-.5)*0.06];
+    const m = L.marker(offset,{icon:makePinIcon(!lab.demo)});
+    m.addTo(map);
+    m.bindTooltip(lab.name,{permanent:false,direction:'top',className:'leaflet-tooltip'});
+    m.on('click',()=> selectLab(i));
+    markers.push(m);
+  });
+}
+
+/* ─── highlight active pin ─── */
+function highlightPin(idx){
+  markers.forEach((m,i)=>{
+    const el = m.getIcon();
+    // re-create icon with/without active class
+    const lab = allLabs[i];
+    const cls = 'custom-pin'+(lab&&!lab.demo?' registered':'')+( i===idx?' active-pin':'');
+    m.setIcon(L.divIcon({className:'',html:`<div class="${cls}"></div>`,iconSize:[28,28],iconAnchor:[14,28]}));
+  });
+}
+
+/* ═══ LEFT PANEL ═══ */
+function renderList(){
+  const q = document.getElementById('panelSearch').value.toLowerCase();
+  const body = document.getElementById('panelBody');
+  body.innerHTML = '';
+
+  const filtered = allLabs.map((l,i)=>({lab:l,idx:i})).filter(({lab})=>
+    !q || (lab.name+' '+lab.manager+' '+lab.city).toLowerCase().includes(q)
+  );
+
+  if(filtered.length===0){
+    body.innerHTML = `<div class="empty-state">
+      <div class="e-icon">🔍</div>
+      <h3 data-en="No labs found" data-fr="Aucun labo trouvé">No labs found</h3>
+      <p data-en="Try a different search." data-fr="Essayez une recherche différente.">Try a different search.</p>
+    </div>`;
+    applyLangInline();
+    return;
+  }
+
+  let html = '<div class="lab-list">';
+  filtered.forEach(({lab,idx})=>{
+    const badge = lab.demo ? '' : `<span class="reg-badge" data-en="Registered" data-fr="Enregistré">Registered</span>`;
+    html += `<div class="list-item ${idx===selectedIdx?'active':''}" onclick="selectLab(${idx})">
+      <div class="list-dot"></div>
+      <div class="list-text">
+        <h4>${lab.name} ${badge}</h4>
+        <span>${lab.city} · ${lab.manager}</span>
+      </div>
+    </div>`;
+  });
+  html += '</div>';
+  body.innerHTML = html;
+  applyLangInline();
+}
+
+/* ─── show detail for selected lab ─── */
+function showDetail(idx){
+  const lab = allLabs[idx];
+  const body = document.getElementById('panelBody');
+
+  // images
+  let imgs = '<div class="detail-imgs">';
+  for(let i=0;i<4;i++){
+    const src = lab.images && lab.images[i];
+    if(src){
+      imgs += `<div class="d-img" onclick="openImgModal('${src}')"><img src="${src}" alt=""></div>`;
+    } else {
+      imgs += `<div class="d-img placeholder" onclick="openEmojiModal('${PLACEHOLDER_EMOJIS[i]}')">${PLACEHOLDER_EMOJIS[i]}</div>`;
+    }
+  }
+  imgs += '</div>';
+
+  // info rows
+  const t = {en:{mgr:"Manager",phone:"Phone",email:"Email",addr:"Address",ig:"Instagram",web:"Website",svcs:"Services"},fr:{mgr:"Gérant",phone:"Téléphone",email:"Email",addr:"Adresse",ig:"Instagram",web:"Site Web",svcs:"Services"}}[lang];
+
+  let rows = '<div class="detail-rows">';
+  rows += `<div class="d-row"><span class="di">👤</span><div class="dt"><strong>${t.mgr}:</strong> ${lab.manager}</div></div>`;
+  rows += `<div class="d-row"><span class="di">📞</span><div class="dt"><strong>${t.phone}:</strong> <a href="tel:${lab.phone.replace(/\s/g,'')}">${lab.phone}</a></div></div>`;
+  rows += `<div class="d-row"><span class="di">✉️</span><div class="dt"><strong>${t.email}:</strong> <a href="mailto:${lab.email}">${lab.email}</a></div></div>`;
+  rows += `<div class="d-row"><span class="di">📍</span><div class="dt"><strong>${t.addr}:</strong> ${lab.address}</div></div>`;
+  if(lab.instagram) rows += `<div class="d-row"><span class="di">📸</span><div class="dt"><strong>${t.ig}:</strong> <a href="https://instagram.com/${lab.instagram.replace('@','')}" target="_blank">${lab.instagram}</a></div></div>`;
+  if(lab.website)   rows += `<div class="d-row"><span class="di">🌐</span><div class="dt"><strong>${t.web}:</strong> <a href="https://${lab.website}" target="_blank">${lab.website}</a></div></div>`;
+  rows += '</div>';
+
+  // services
+  let svcs = `<div class="detail-svcs"><h5>${t.svcs}</h5><div class="tags">`;
+  (lab.services||[]).forEach(s=>{ svcs+=`<span class="tag">${s[lang]}</span>`; });
+  svcs += '</div></div>';
+
+  body.innerHTML = `
+    <div class="detail-panel active">
+      <div class="detail-header">
+        <button class="back-btn" onclick="closDetail()">✕</button>
+        <h3>${lab.name}</h3>
+        <span class="city-badge">${lab.city}</span>
+      </div>
+      ${imgs}
+      ${rows}
+      ${svcs}
+    </div>`;
+}
+
+function closDetail(){
+  selectedIdx = null;
+  highlightPin(null);
+  renderList();
+}
+
+/* ─── SELECT a lab (from list or pin) ─── */
+function selectLab(idx){
+  selectedIdx = idx;
+  highlightPin(idx);
+  // fly map to pin
+  const lab = allLabs[idx];
+  const coords = CITY_COORDS[lab.city];
+  if(coords) map.flyTo(coords, Math.max(map.getZoom(),8), {duration:0.8});
+  showDetail(idx);
+}
+
+/* ─── search listener ─── */
+document.getElementById('panelSearch').addEventListener('input', ()=>{
+  closDetail();
+  renderList();
+});
+
+/* ─── image modal ─── */
+function openImgModal(src){
+  document.getElementById('modalInner').innerHTML = `<img src="${src}" alt="">`;
+  document.getElementById('modalOv').classList.add('active');
+}
+function openEmojiModal(emo){
+  document.getElementById('modalInner').innerHTML = `<div class="me">${emo}</div>`;
+  document.getElementById('modalOv').classList.add('active');
+}
+function closeImgModal(){ document.getElementById('modalOv').classList.remove('active'); }
+
+/* ─── i18n ─── */
+function applyLangInline(){
+  document.querySelectorAll('[data-en][data-fr]').forEach(el=>{
+    const v=el.getAttribute('data-'+lang);
+    if(!v) return;
+    if(el.tagName==='INPUT') el.placeholder=v;
+    else el.textContent=v;
+  });
+}
+function applyLang(l){
+  lang=l;
+  document.querySelectorAll('.lang-btn').forEach(b=> b.classList.toggle('active', b.dataset.lang===l));
+  applyLangInline();
+  if(selectedIdx!==null) showDetail(selectedIdx);
+  else renderList();
+}
+document.querySelectorAll('.lang-btn').forEach(b=> b.addEventListener('click',()=> applyLang(b.dataset.lang)));
+
+/* ─── INIT ─── */
+allLabs = getAllLabs();
+placePins();
+renderList();
+</script>
+</body>
+</html>
