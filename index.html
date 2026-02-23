@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DentalLink Morocco - Connect Labs & Dentists</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --secondary: #0891b2;
+            --dark: #1e293b;
+            --accent: #06b6d4;
+            --light-bg: #f1f5f9;
+            --white: #ffffff;
+            --text-dark: #334155;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--white);
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            padding: 1.2rem 5%;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(37, 99, 235, 0.2);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        nav .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--primary);
+            letter-spacing: -1px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-dark);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        /* Language Switcher */
+        .language-switcher {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--light-bg);
+            padding: 0.5rem;
+            border-radius: 50px;
+        }
+
+        .lang-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            background: transparent;
+            color: var(--text-dark);
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem;
+        }
+
+        .lang-btn.active {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .lang-btn:hover:not(.active) {
+            background: rgba(37, 99, 235, 0.1);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 8rem 5% 4rem;
+            background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%);
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(37, 99, 235, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(8, 145, 178, 0.06) 0%, transparent 50%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .hero-content {
+            max-width: 1400px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-text h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 4.5rem;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-text p {
+            font-size: 1.3rem;
+            line-height: 1.7;
+            color: var(--text-dark);
+            opacity: 0.85;
+            margin-bottom: 2.5rem;
+            animation: fadeInUp 1s ease-out 0.2s backwards;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1.5rem;
+            animation: fadeInUp 1s ease-out 0.4s backwards;
+        }
+
+        .btn {
+            padding: 1rem 2.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--white);
+            box-shadow: 0 10px 30px rgba(211, 84, 0, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(211, 84, 0, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: var(--white);
+            transform: translateY(-3px);
+        }
+
+        /* Hero Visual */
+        .hero-visual {
+            position: relative;
+            animation: fadeIn 1.2s ease-out 0.3s backwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .visual-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(37, 99, 235, 0.2);
+            border-radius: 20px;
+            padding: 3rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(37, 99, 235, 0.1);
+        }
+
+        .visual-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.05) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .map-preview {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(135deg, #dbeafe 0%, rgba(37, 99, 235, 0.1) 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .map-preview::after {
+            content: '🗺️';
+            font-size: 5rem;
+            opacity: 0.3;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            position: relative;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1.5rem;
+            background: rgba(37, 99, 235, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(37, 99, 235, 0.15);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            opacity: 0.7;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 6rem 5%;
+            background: var(--white);
+            color: var(--dark);
+        }
+
+        .features .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            font-weight: 900;
+            text-align: center;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            color: var(--text-dark);
+            opacity: 0.7;
+            margin-bottom: 4rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2.5rem;
+        }
+
+        .feature-card {
+            background: var(--light-bg);
+            padding: 2.5rem;
+            border-radius: 20px;
+            transition: all 0.4s ease;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 60px rgba(37, 99, 235, 0.15);
+            border-color: var(--primary);
+        }
+
+        .feature-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .feature-card p {
+            color: var(--text-dark);
+            opacity: 0.75;
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+
+        /* How It Works */
+        .how-it-works {
+            padding: 6rem 5%;
+            background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%);
+            position: relative;
+        }
+
+        .how-it-works .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-top: 4rem;
+        }
+
+        .step {
+            text-align: center;
+            position: relative;
+        }
+
+        .step-number {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 800;
+            margin: 0 auto 1.5rem;
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.3);
+        }
+
+        .step h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .step p {
+            color: var(--text-dark);
+            opacity: 0.75;
+            line-height: 1.6;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            padding: 6rem 5%;
+            background: var(--primary);
+            text-align: center;
+        }
+
+        .cta-section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 1.5rem;
+            color: var(--white);
+        }
+
+        .cta-section p {
+            font-size: 1.3rem;
+            margin-bottom: 2.5rem;
+            color: rgba(255, 255, 255, 0.95);
+        }
+
+        .btn-white {
+            background: var(--white);
+            color: var(--primary);
+        }
+
+        .btn-white:hover {
+            background: var(--light-bg);
+            transform: translateY(-3px);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--light-bg);
+            padding: 3rem 5%;
+            border-top: 1px solid rgba(37, 99, 235, 0.2);
+        }
+
+        footer .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        footer p {
+            color: var(--text-dark);
+            opacity: 0.6;
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+
+            .hero-text h1 {
+                font-size: 3rem;
+            }
+
+            .nav-links {
+                gap: 1.5rem;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+            }
+
+            .section-title {
+                font-size: 2.5rem;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .hero-text h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-text p {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="container">
+            <div class="logo">DentalLink</div>
+            <div style="display: flex; align-items: center; gap: 2rem;">
+                <ul class="nav-links">
+                    <li><a href="#home" data-en="Home" data-fr="Accueil">Home</a></li>
+                    <li><a href="#features" data-en="Features" data-fr="Fonctionnalités">Features</a></li>
+                    <li><a href="#how-it-works" data-en="How It Works" data-fr="Comment Ça Marche">How It Works</a></li>
+                    <li><a href="#contact" data-en="Contact" data-fr="Contact">Contact</a></li>
+                </ul>
+                <div class="language-switcher">
+                    <button class="lang-btn active" data-lang="en">EN</button>
+                    <button class="lang-btn" data-lang="fr">FR</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1 data-en="Connecting Dental Labs & Dentists Across Morocco" data-fr="Connecter les Laboratoires Dentaires et Dentistes à Travers le Maroc">Connecting Dental Labs & Dentists Across Morocco</h1>
+                <p data-en="The first platform designed to bridge the gap between dental laboratories and dental professionals. Find your perfect collaboration partner with just a few clicks." data-fr="La première plateforme conçue pour combler le fossé entre les laboratoires dentaires et les professionnels dentaires. Trouvez votre partenaire de collaboration parfait en quelques clics.">The first platform designed to bridge the gap between dental laboratories and dental professionals. Find your perfect collaboration partner with just a few clicks.</p>
+                <div class="cta-buttons">
+                    <a href="#" class="btn btn-primary" data-en="Explore Map" data-fr="Explorer la Carte">Explore Map</a>
+                    <a href="#" class="btn btn-secondary" data-en="Register Your Lab" data-fr="Inscrivez Votre Labo">Register Your Lab</a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="visual-card">
+                    <div class="map-preview"></div>
+                    <div class="stats">
+                        <div class="stat-item">
+                            <div class="stat-number">150+</div>
+                            <div class="stat-label" data-en="Dental Labs" data-fr="Laboratoires Dentaires">Dental Labs</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">500+</div>
+                            <div class="stat-label" data-en="Dentists" data-fr="Dentistes">Dentists</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">12</div>
+                            <div class="stat-label" data-en="Cities" data-fr="Villes">Cities</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">24/7</div>
+                            <div class="stat-label" data-en="Support" data-fr="Assistance">Support</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <h2 class="section-title" data-en="Why Choose DentalLink?" data-fr="Pourquoi Choisir DentalLink?">Why Choose DentalLink?</h2>
+            <p class="section-subtitle" data-en="Everything you need to build successful partnerships in the dental industry" data-fr="Tout ce dont vous avez besoin pour établir des partenariats réussis dans l'industrie dentaire">Everything you need to build successful partnerships in the dental industry</p>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🗺️</div>
+                    <h3 data-en="Interactive Map" data-fr="Carte Interactive">Interactive Map</h3>
+                    <p data-en="Explore dental labs across Morocco with our intuitive map interface. Filter by location, services, and specializations to find the perfect match." data-fr="Explorez les laboratoires dentaires à travers le Maroc avec notre interface cartographique intuitive. Filtrez par emplacement, services et spécialisations pour trouver la correspondance parfaite.">Explore dental labs across Morocco with our intuitive map interface. Filter by location, services, and specializations to find the perfect match.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">👥</div>
+                    <h3 data-en="Detailed Lab Profiles" data-fr="Profils de Laboratoires Détaillés">Detailed Lab Profiles</h3>
+                    <p data-en="Access comprehensive profiles with equipment details, certifications, past work, and client reviews to make informed decisions." data-fr="Accédez à des profils complets avec les détails de l'équipement, les certifications, les travaux antérieurs et les avis des clients pour prendre des décisions éclairées.">Access comprehensive profiles with equipment details, certifications, past work, and client reviews to make informed decisions.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📋</div>
+                    <h3 data-en="Easy Registration" data-fr="Inscription Facile">Easy Registration</h3>
+                    <p data-en="Simple questionnaire to add your lab information. Get listed on the map and start connecting with dentists in minutes." data-fr="Questionnaire simple pour ajouter les informations de votre laboratoire. Soyez répertorié sur la carte et commencez à vous connecter avec des dentistes en quelques minutes.">Simple questionnaire to add your lab information. Get listed on the map and start connecting with dentists in minutes.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔍</div>
+                    <h3 data-en="Advanced Search" data-fr="Recherche Avancée">Advanced Search</h3>
+                    <p data-en="Filter labs by specialization, capacity, turnaround time, and more. Find exactly what you need when you need it." data-fr="Filtrez les laboratoires par spécialisation, capacité, délai d'exécution, et plus encore. Trouvez exactement ce dont vous avez besoin quand vous en avez besoin.">Filter labs by specialization, capacity, turnaround time, and more. Find exactly what you need when you need it.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⭐</div>
+                    <h3 data-en="Reviews & Ratings" data-fr="Avis et Évaluations">Reviews & Ratings</h3>
+                    <p data-en="Read authentic reviews from dentists and labs. Build your reputation through quality work and reliable service." data-fr="Lisez des avis authentiques de dentistes et de laboratoires. Construisez votre réputation grâce à un travail de qualité et un service fiable.">Read authentic reviews from dentists and labs. Build your reputation through quality work and reliable service.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💬</div>
+                    <h3 data-en="Direct Communication" data-fr="Communication Directe">Direct Communication</h3>
+                    <p data-en="Connect directly with labs or dentists through our platform. Discuss projects, timelines, and requirements seamlessly." data-fr="Connectez-vous directement avec des laboratoires ou des dentistes via notre plateforme. Discutez des projets, des délais et des exigences de manière transparente.">Connect directly with labs or dentists through our platform. Discuss projects, timelines, and requirements seamlessly.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="container">
+            <h2 class="section-title" data-en="How It Works" data-fr="Comment Ça Marche">How It Works</h2>
+            <p class="section-subtitle" data-en="Get started in three simple steps" data-fr="Commencez en trois étapes simples">Get started in three simple steps</p>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3 data-en="Register Your Lab" data-fr="Inscrivez Votre Laboratoire">Register Your Lab</h3>
+                    <p data-en="Fill out our simple questionnaire with your lab details, services, and location information." data-fr="Remplissez notre questionnaire simple avec les détails de votre laboratoire, vos services et vos informations de localisation.">Fill out our simple questionnaire with your lab details, services, and location information.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3 data-en="Get Listed" data-fr="Soyez Répertorié">Get Listed</h3>
+                    <p data-en="Your lab appears on our interactive map with a complete profile visible to dentists nationwide." data-fr="Votre laboratoire apparaît sur notre carte interactive avec un profil complet visible pour les dentistes dans tout le pays.">Your lab appears on our interactive map with a complete profile visible to dentists nationwide.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3 data-en="Start Connecting" data-fr="Commencez à Vous Connecter">Start Connecting</h3>
+                    <p data-en="Receive inquiries from dentists, build partnerships, and grow your business network." data-fr="Recevez des demandes de dentistes, établissez des partenariats et développez votre réseau d'affaires.">Receive inquiries from dentists, build partnerships, and grow your business network.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <h2 data-en="Ready to Expand Your Network?" data-fr="Prêt à Élargir Votre Réseau?">Ready to Expand Your Network?</h2>
+        <p data-en="Join hundreds of dental professionals already using DentalLink" data-fr="Rejoignez des centaines de professionnels dentaires utilisant déjà DentalLink">Join hundreds of dental professionals already using DentalLink</p>
+        <a href="#" class="btn btn-white" data-en="Get Started Today" data-fr="Commencez Aujourd'hui">Get Started Today</a>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p data-en="&copy; 2024 DentalLink Morocco. All rights reserved." data-fr="&copy; 2024 DentalLink Maroc. Tous droits réservés.">&copy; 2024 DentalLink Morocco. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Language switcher functionality
+        let currentLang = 'en';
+
+        const langButtons = document.querySelectorAll('.lang-btn');
+        const translatableElements = document.querySelectorAll('[data-en][data-fr]');
+
+        function switchLanguage(lang) {
+            currentLang = lang;
+            
+            // Update all translatable elements
+            translatableElements.forEach(element => {
+                const translation = element.getAttribute(`data-${lang}`);
+                if (translation) {
+                    // Handle HTML content (like &copy;)
+                    if (element.tagName === 'P' && translation.includes('&copy;')) {
+                        element.innerHTML = translation;
+                    } else {
+                        element.textContent = translation;
+                    }
+                }
+            });
+
+            // Update active button state
+            langButtons.forEach(btn => {
+                if (btn.getAttribute('data-lang') === lang) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            // Update HTML lang attribute
+            document.documentElement.lang = lang;
+        }
+
+        // Add click event listeners to language buttons
+        langButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const lang = button.getAttribute('data-lang');
+                switchLanguage(lang);
+            });
+        });
+
+        // Smooth scroll for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
